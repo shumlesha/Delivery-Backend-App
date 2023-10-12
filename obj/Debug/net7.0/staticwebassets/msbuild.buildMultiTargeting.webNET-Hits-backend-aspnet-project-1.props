@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\webNET-Hits-backend-aspnet-project-1.props" />
+</Project>
