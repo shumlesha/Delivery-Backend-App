@@ -10,5 +10,9 @@ public class Rating
     [Required]
     public double Value { get; set; }
     
+    public Guid DishId { get; set; }
+    public Dish Dish { get; set; }
     
+    public Guid UserId { get; set; }
+    public User User { get; set; }
 }

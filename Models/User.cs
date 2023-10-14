@@ -25,9 +25,11 @@ public class User
     public string Email { get; set; }
     
     
-    public string Adress { get; set; }
+    public string Address { get; set; }
     
-    
-    
+    public List<Rating> Ratings { get; set; }
+    public List<DishInCart> DishesInCart { get; set; }
+    public List<Dish> Dishes { get; set; }
+    public List<Order> Orders { get; set; }
     
 }

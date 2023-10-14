@@ -9,4 +9,7 @@ public class DishInCart
     
     [Required]
     public int Count { get; set; }
+    
+    public Guid OrderId { get; set; }
+    public virtual Order Order { get; set; }
 }

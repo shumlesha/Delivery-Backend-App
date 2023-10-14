@@ -15,4 +15,8 @@ public class Hierarchy
     [Required]
     public bool IsActive { get; set; }
     
+    public List <House> Houses { get; set; }
+    
+    public AddressElement Parent { get; set; }
+    
 }

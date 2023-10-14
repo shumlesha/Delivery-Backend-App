@@ -28,4 +28,6 @@ public class House
     [Required]
     public bool IsActive { get; set; }
     
+    public Guid HierarchyId { get; set; }
+    public Hierarchy Hierarchy { get; set; }
 }

@@ -16,4 +16,12 @@ public class Order
     public Guid AddressId { get; set; }
     
     public Status Status { get; set; }
+    
+    public List<DishInCart> DishesInCarts { get; set; }
+    
+    public Guid UserId { get; set; }
+    public User User { get; set;  }
+    
+    public House Address { get; set; }
+    
 }

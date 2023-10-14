@@ -23,5 +23,6 @@ public class Dish
     
     public Category Category { get; set; }
     
-
+    public List<Rating> Ratings { get; set; }
+    public List<DishInCart> DishesInCart { get; set; }
 }
