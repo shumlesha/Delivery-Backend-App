@@ -5,6 +5,6 @@ public enum Category
     WOK,
     Pizza,
     Soup,
-    Desert,
-    Drink,
+    Dessert,
+    Drink
 }
