@@ -23,25 +23,33 @@ public class UserAccountController: ControllerBase
         try
         {
             var userTOKEN = await _userAccountService.UserRegister(userDTO);
-            return Ok(userTOKEN);
+            return Ok(new {
+                token = userTOKEN
+            });
         }
         catch
         {
-            throw new NotImplementedException();
+            return BadRequest();
         }
+        
+        
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> UserLogin(UserDTO userDTO)
     {
+
         try
         {
             var userTOKEN = await _userAccountService.UserLogin(userDTO);
-            return Ok(userTOKEN);
+            return Ok(new { token = userTOKEN });
+
         }
         catch
         {
-            throw new NotImplementedException();
+            return BadRequest();
         }
+        
+       
     }
 }

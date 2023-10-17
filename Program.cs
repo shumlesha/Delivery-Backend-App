@@ -12,7 +12,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 //Authsettings
-var jwtParams = builder.Configuration.GetSection("JWT").Get<JwtParams>();
+builder.Services.Configure<JwtParams>(builder.Configuration.GetSection("JWT"));
+var jwtConfig = builder.Configuration.GetSection("JWT");
+var key = Encoding.UTF8.GetBytes(jwtConfig["Key"]);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -21,8 +23,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             {
                 ValidateIssuer = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtParams.Issuer,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtParams.Key))
+                ValidIssuer = jwtConfig["Issuer"],
+                IssuerSigningKey = new SymmetricSecurityKey(key)
             };
         }
     );

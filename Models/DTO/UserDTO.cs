@@ -5,19 +5,21 @@ namespace webNET_Hits_backend_aspnet_project_1.Models.DTO;
 public class UserDTO
 {
     [Required]
-    public string FullName { get; set; }
+    public string fullName { get; set; }
     
     [Required]
-    public DateTime BirthDate { get; set; }
+    public DateTime birthDate { get; set; }
     
     [Required]
-    public string Gender { get; set; }
+    public string gender { get; set; }
     
     [Phone]
-    public string Phone { get; set; }
+    public string phoneNumber { get; set; }
     
     [EmailAddress]
-    public string Email { get; set; }
+    public string email { get; set; }
     
-    public string Address { get; set; }
+    public string adressId { get; set; }
+    
+    public string password { get; set; }
 }
