@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
+
 namespace webNET_Hits_backend_aspnet_project_1.Models;
 
 public class User
@@ -8,6 +9,7 @@ public class User
     public Guid Id { get; set; }
     
     [Required]
+    
     public string FullName { get; set; }
     
     [Required]
@@ -26,6 +28,8 @@ public class User
     
     
     public string Address { get; set; }
+    
+    public string Password { get; set; }
     
     public List<Rating> Ratings { get; set; }
     public List<DishInCart> DishesInCart { get; set; }
