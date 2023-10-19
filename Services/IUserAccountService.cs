@@ -13,13 +13,15 @@ namespace webNET_Hits_backend_aspnet_project_1.Services;
 
 public interface IUserAccountService
 {
-    Task<string> UserRegister(UserDTO userDTO);
-    Task<string> UserLogin(UserDTO userDTO);
+    Task<string> UserRegister(UserRegisterModel userRegisterModel);
+    Task<string> UserLogin(LoginCredentials loginCredentials);
     string GetJwtToken(User user);
     string PasswordToCrypto(string password);
     bool CheckPass(string possiblePassword, string existingPassword);
 
     Task<UserDTO> UserGetProfile(Guid userID);
+
+    Task UserEditProfile(UserEditModel userEditModel, Guid guid);
 }
 
 
@@ -33,20 +35,20 @@ public class UserAccountService: IUserAccountService
         _JwtParams = jwtParamsOptions.Value;
     }
 
-    public async Task<string> UserRegister(UserDTO userDTO)
+    public async Task<string> UserRegister(UserRegisterModel userRegisterModel)
     {
         var user = new User
         {
             Id = Guid.NewGuid(),
-            FullName = userDTO.fullName,
-            BirthDate = userDTO.birthDate,
-            Gender = userDTO.gender,
-            Phone = userDTO.phoneNumber,
-            Email = userDTO.email,
-            Address = userDTO.address,
-            Password = PasswordToCrypto(userDTO.password)
+            FullName = userRegisterModel.fullName,
+            BirthDate = userRegisterModel.birthDate,
+            Gender = userRegisterModel.gender,
+            Phone = userRegisterModel.phoneNumber,
+            Email = userRegisterModel.email,
+            Address = userRegisterModel.addressId,
+            Password = PasswordToCrypto(userRegisterModel.password)
         };
-        var possibleUser = _context.Users.SingleOrDefault(u => u.Email == userDTO.email);
+        var possibleUser = _context.Users.SingleOrDefault(u => u.Email == userRegisterModel.email);
 
         if (possibleUser != null)
         {
@@ -62,15 +64,15 @@ public class UserAccountService: IUserAccountService
         return GetJwtToken(user);
     }
     
-    public async Task<string> UserLogin(UserDTO userDTO)
+    public async Task<string> UserLogin(LoginCredentials loginCredentials)
     {
-        var user = _context.Users.SingleOrDefault(user => user.Email == userDTO.email);
+        var user = _context.Users.SingleOrDefault(user => user.Email == loginCredentials.email);
 
         if (user == null)
         {
             throw new AuthenticationException();
         }
-        else if (!CheckPass(userDTO.password, user.Password))
+        else if (!CheckPass(loginCredentials.password, user.Password))
         {
             throw new AuthenticationException(); 
         }
@@ -93,8 +95,21 @@ public class UserAccountService: IUserAccountService
             phoneNumber = user.Phone
         };
     }
-    
-    
+
+    public async Task UserEditProfile(UserEditModel userEditModel, Guid guid)
+    {
+        var user = await _context.Users.FindAsync(guid);
+
+        user.FullName = userEditModel.fullName;
+        user.BirthDate = userEditModel.birthDate;
+        user.Gender = userEditModel.gender;
+        user.Address = userEditModel.addressId;
+        user.Phone = userEditModel.phoneNumber;
+
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
+
+    }
     
     
     
