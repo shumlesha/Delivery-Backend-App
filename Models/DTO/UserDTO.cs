@@ -4,6 +4,8 @@ namespace webNET_Hits_backend_aspnet_project_1.Models.DTO;
 
 public class UserDTO
 {
+    public Guid id { get; set; }
+    
     [Required]
     public string fullName { get; set; }
     
@@ -19,7 +21,7 @@ public class UserDTO
     [EmailAddress]
     public string email { get; set; }
     
-    public string adressId { get; set; }
+    public string address { get; set; }
     
     public string password { get; set; }
 }

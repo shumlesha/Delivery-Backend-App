@@ -18,6 +18,8 @@ public interface IUserAccountService
     string GetJwtToken(User user);
     string PasswordToCrypto(string password);
     bool CheckPass(string possiblePassword, string existingPassword);
+
+    Task<UserDTO> UserGetProfile(Guid userID);
 }
 
 
@@ -41,7 +43,7 @@ public class UserAccountService: IUserAccountService
             Gender = userDTO.gender,
             Phone = userDTO.phoneNumber,
             Email = userDTO.email,
-            Address = userDTO.adressId,
+            Address = userDTO.address,
             Password = PasswordToCrypto(userDTO.password)
         };
         var possibleUser = _context.Users.SingleOrDefault(u => u.Email == userDTO.email);
@@ -76,6 +78,26 @@ public class UserAccountService: IUserAccountService
         return GetJwtToken(user);
     }
 
+    public async Task<UserDTO> UserGetProfile(Guid userID)
+    {
+        var user = await _context.Users.FindAsync(userID);
+
+        return new UserDTO
+        {
+            id = user.Id,
+            fullName = user.FullName,
+            birthDate = user.BirthDate,
+            gender = user.Gender,
+            address = user.Address,
+            email = user.Email,
+            phoneNumber = user.Phone
+        };
+    }
+    
+    
+    
+    
+    
     public string GetJwtToken(User user)
     {
         var claims = new List<Claim>

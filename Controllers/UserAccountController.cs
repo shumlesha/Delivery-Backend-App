@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 using webNET_Hits_backend_aspnet_project_1.Services;
@@ -52,4 +55,18 @@ public class UserAccountController: ControllerBase
         
        
     }
+
+
+    [HttpGet("profile")]
+    public async Task<UserDTO> UserGetProfile()
+    {
+        var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+        var tokenhandler = new JwtSecurityTokenHandler();
+        var normalToken = tokenhandler.ReadToken(token) as JwtSecurityToken;
+
+        return await _userAccountService.UserGetProfile(new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value));
+    }
+    
+    
 }
