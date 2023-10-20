@@ -12,6 +12,8 @@ public class AppDbContext: DbContext
     public DbSet<House> Houses { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<Rating> Ratings { get; set; }
+    public DbSet<BannedToken> BannedTokens { get; set; }
+    
     
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {

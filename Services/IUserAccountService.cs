@@ -22,6 +22,8 @@ public interface IUserAccountService
     Task<UserDTO> UserGetProfile(Guid userID);
 
     Task UserEditProfile(UserEditModel userEditModel, Guid guid);
+
+    Task UserLogoutProfile(string token);
 }
 
 
@@ -80,6 +82,20 @@ public class UserAccountService: IUserAccountService
         return GetJwtToken(user);
     }
 
+
+    public async Task UserLogoutProfile(string token)
+    {
+        _context.BannedTokens.Add(new BannedToken
+        {
+            Id = Guid.NewGuid(),
+            TokenString = token,
+            AdditionDate = DateTime.UtcNow
+        });
+
+        await _context.SaveChangesAsync();
+    }
+    
+    
     public async Task<UserDTO> UserGetProfile(Guid userID)
     {
         var user = await _context.Users.FindAsync(userID);

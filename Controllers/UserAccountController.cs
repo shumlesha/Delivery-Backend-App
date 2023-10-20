@@ -57,7 +57,17 @@ public class UserAccountController: ControllerBase
        
     }
 
-
+    [HttpPost("logout")]
+    public async Task<IActionResult> UserLogoutProfile()
+    {
+        var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        await _userAccountService.UserLogoutProfile(token);
+        return Ok();
+    }
+    
+    
+    
+    [Authorize]
     [HttpGet("profile")]
     public async Task<UserDTO> UserGetProfile()
     {
@@ -69,6 +79,7 @@ public class UserAccountController: ControllerBase
         return await _userAccountService.UserGetProfile(new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value));
     }
 
+    [Authorize]
     [HttpPut("profile")]
     public async Task<IActionResult> UserEditProfile(UserEditModel userEditModel)
     {
