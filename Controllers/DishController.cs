@@ -27,6 +27,7 @@ public class DishController: ControllerBase
 
 
 
+
     [HttpGet("{id}")]
     public ActionResult<DishDTO> GetDish(Guid id)
     {
@@ -44,7 +45,30 @@ public class DishController: ControllerBase
         var normalToken = tokenhandler.ReadToken(token) as JwtSecurityToken;
         var userID = new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
 
+
         return _dishService.CheckRatePossibility(id, userID);
+    }
+
+    [HttpPost("{id}/rating")]
+    public IActionResult RateDish(Guid id, int ratingScore)
+    {
+        var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+        var tokenhandler = new JwtSecurityTokenHandler();
+        var normalToken = tokenhandler.ReadToken(token) as JwtSecurityToken;
+        var userID = new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
+        
+        bool israted = _dishService.RateDish(id, ratingScore, userID);
+
+        if (israted)
+        {
+            return Ok();
+        }
+        else
+        {
+            return BadRequest();
+        }
+        
     }
 
 }
