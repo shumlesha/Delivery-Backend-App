@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 using webNET_Hits_backend_aspnet_project_1.Services;
@@ -24,10 +26,25 @@ public class DishController: ControllerBase
     }
 
 
+
     [HttpGet("{id}")]
     public ActionResult<DishDTO> GetDish(Guid id)
     {
         return _dishService.GetDish(id);
     }
     
+
+
+    [HttpGet("{id}/rating/check")]
+    public bool CheckRatePossibility(Guid id)
+    {
+        var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+        var tokenhandler = new JwtSecurityTokenHandler();
+        var normalToken = tokenhandler.ReadToken(token) as JwtSecurityToken;
+        var userID = new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
+
+        return _dishService.CheckRatePossibility(id, userID);
+    }
+
 }

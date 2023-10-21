@@ -7,6 +7,8 @@ public interface IDishService
 {
     DishPagedListDTO GetListOfDishes(List<Category> categories, bool vegetarian, DishSorting? sorting, int page);
     DishDTO GetDish(Guid id);
+    bool CheckRatePossibility(Guid id, Guid userID);
+
 }
 
 public class DishService: IDishService
@@ -86,8 +88,9 @@ public class DishService: IDishService
 
 
     }
-    
-    
+
+
+
     public DishDTO GetDish(Guid id)
     {
         var dish = _context.Dishes.FirstOrDefault(dish =>
@@ -104,6 +107,15 @@ public class DishService: IDishService
             rating = dish.Rating,
             category = dish.Category
         };
+    }
+
+    public bool CheckRatePossibility(Guid id, Guid userID)
+    {
+        var allUserCarts = _context.Orders.Where(order =>
+            order.UserId == userID).SelectMany(order => order.DishesInCarts).ToList();
+
+        return allUserCarts.Any(dishInCart => dishInCart.DishId == id);
+        
     }
     
 }
