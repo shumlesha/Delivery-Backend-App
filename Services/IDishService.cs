@@ -6,6 +6,7 @@ namespace webNET_Hits_backend_aspnet_project_1.Services;
 public interface IDishService
 {
     DishPagedListDTO GetListOfDishes(List<Category> categories, bool vegetarian, DishSorting? sorting, int page);
+    DishDTO GetDish(Guid id);
 }
 
 public class DishService: IDishService
@@ -84,6 +85,25 @@ public class DishService: IDishService
         };
 
 
+    }
+    
+    
+    public DishDTO GetDish(Guid id)
+    {
+        var dish = _context.Dishes.FirstOrDefault(dish =>
+            dish.Id == id);
+
+        return new DishDTO
+        {
+            id = dish.Id,
+            name = dish.Name,
+            desctiption = dish.Description,
+            price = dish.Price,
+            image = dish.Image,
+            vegeterian = dish.Vegeterian,
+            rating = dish.Rating,
+            category = dish.Category
+        };
     }
     
 }

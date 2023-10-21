@@ -21,6 +21,13 @@ public class DishController: ControllerBase
         DishSorting? sorting = null, int page = 1)
     {
         return _dishService.GetListOfDishes(categories, vegetarian, sorting, page);
-    } 
+    }
+
+
+    [HttpGet("{id}")]
+    public ActionResult<DishDTO> GetDish(Guid id)
+    {
+        return _dishService.GetDish(id);
+    }
     
 }
