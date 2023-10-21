@@ -6,6 +6,8 @@ namespace webNET_Hits_backend_aspnet_project_1.Services;
 public interface IDishService
 {
     DishPagedListDTO GetListOfDishes(List<Category> categories, bool vegetarian, DishSorting? sorting, int page);
+    
+    bool RateDish(Guid id, int ratingScore, Guid userID);
 }
 
 public class DishService: IDishService
@@ -85,5 +87,53 @@ public class DishService: IDishService
 
 
     }
-    
+
+
+
+
+    public bool RateDish(Guid id, int ratingScore, Guid userID)
+    {
+        var allUserCarts = _context.Orders.Where(order =>
+            order.UserId == userID).SelectMany(order => order.DishesInCarts).ToList();
+
+        var isOrdered = allUserCarts.Any(dishInCart => dishInCart.DishId == id);
+
+        if (!isOrdered)
+        {
+            return false;
+        }
+
+        var RatedBefore = _context.Ratings.FirstOrDefault(rating => rating.DishId == id
+                                                                      && rating.UserId == userID);
+        if (RatedBefore != null)
+        {
+            RatedBefore.Value = ratingScore;
+        }
+        else
+        {
+            var settedRating = new Rating
+            {
+                Id = Guid.NewGuid(),
+                Value = ratingScore,
+                DishId = id,
+                UserId = userID
+            };
+            _context.Ratings.Add(settedRating);
+        }
+        
+         
+        var dish = _context.Dishes.FirstOrDefault(
+            dish => dish.Id == id);
+
+        if (dish != null)
+        {
+            dish.Rating = _context.Ratings.Where(rating => rating.DishId == id).Average(rating => rating.Value);
+            
+        }
+        
+        
+        _context.SaveChanges();
+
+        return true;
+    }
 }
