@@ -6,6 +6,8 @@ namespace webNET_Hits_backend_aspnet_project_1.Services;
 public interface IDishService
 {
     DishPagedListDTO GetListOfDishes(List<Category> categories, bool vegetarian, DishSorting? sorting, int page);
+    
+    bool CheckRatePossibility(Guid id, Guid userID);
 }
 
 public class DishService: IDishService
@@ -83,6 +85,16 @@ public class DishService: IDishService
             }
         };
 
+
+    }
+    
+    
+    public bool CheckRatePossibility(Guid id, Guid userID)
+    {
+        var allUserCarts = _context.Orders.Where(order =>
+            order.UserId == userID).SelectMany(order => order.DishesInCarts).ToList();
+
+        return allUserCarts.Any(dishInCart => dishInCart.DishId == id);
 
     }
     
