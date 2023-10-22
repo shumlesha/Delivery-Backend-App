@@ -30,4 +30,20 @@ public class BasketController: ControllerBase
 
         return Ok(await _basketService.GetCart(userID));
     }
+
+    [Authorize]
+    [HttpPost("dish/{dishId}")]
+    public async Task<IActionResult> AddDish(Guid dishId)
+    {
+        var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+        var tokenhandler = new JwtSecurityTokenHandler();
+        var normalToken = tokenhandler.ReadToken(token) as JwtSecurityToken;
+        var userID = new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
+
+        await _basketService.AddDish(dishId, userID);
+        
+        return Ok();
+    }
+    
 }

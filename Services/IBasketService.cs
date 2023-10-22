@@ -7,6 +7,8 @@ namespace webNET_Hits_backend_aspnet_project_1.Services;
 public interface IBasketService
 {
     Task<List<DishInCartDTO>> GetCart(Guid userID);
+
+    Task AddDish(Guid id, Guid userID);
 }
 
 
@@ -38,5 +40,31 @@ public class BasketService : IBasketService
                 Amount = dishView.Count,
                 Image = dishView.Dish.Image
             }).ToList();
+    }
+
+    public async Task AddDish(Guid id, Guid userID)
+    {
+        var dishInCart = await _context.DishesInCart.FirstOrDefaultAsync(
+            dishView => dishView.DishId == id && dishView.UserId == userID
+                                              && dishView.OrderId == null);
+
+        if (dishInCart != null)
+        {
+            dishInCart.Count += 1;
+        }
+        else
+        {
+            await _context.DishesInCart.AddAsync(
+            
+                new DishInCart
+                {
+                    DishId = id,
+                    UserId = userID,
+                    Count = 1
+                }
+            );
+        }
+
+        await _context.SaveChangesAsync();
     }
 }
