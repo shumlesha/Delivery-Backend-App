@@ -78,16 +78,28 @@ public class UserAccountService: IUserAccountService
         {
             throw new AuthenticationException(); 
         }
-
+        
+        var bannedToken = _context.BannedTokens.FirstOrDefault(tok => tok.UserID == user.Id);
+        if (bannedToken != null)
+        {
+            _context.BannedTokens.Remove(bannedToken);
+            await _context.SaveChangesAsync();
+        }
         return GetJwtToken(user);
     }
 
 
     public async Task UserLogoutProfile(string token)
     {
+        var tokenhandler = new JwtSecurityTokenHandler();
+        var normalToken = tokenhandler.ReadToken(token) as JwtSecurityToken;
+        var guid = new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
+
+        
         _context.BannedTokens.Add(new BannedToken
         {
             Id = Guid.NewGuid(),
+            UserID = guid,
             TokenString = token,
             AdditionDate = DateTime.UtcNow
         });

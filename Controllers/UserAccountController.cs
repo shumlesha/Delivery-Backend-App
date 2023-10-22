@@ -56,7 +56,8 @@ public class UserAccountController: ControllerBase
         
        
     }
-
+    
+    [Authorize]
     [HttpPost("logout")]
     public async Task<IActionResult> UserLogoutProfile()
     {
