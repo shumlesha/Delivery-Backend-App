@@ -35,7 +35,7 @@ public class User
     
     public List<Rating> Ratings { get; set; }
     public List<DishInCart> DishesInCart { get; set; }
-    public List<Dish> Dishes { get; set; }
+    //public List<Dish> Dishes { get; set; }
     public List<Order> Orders { get; set; }
     
 }
