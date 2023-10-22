@@ -16,10 +16,11 @@ public class Dish
     [Required]
     public string Description { get; set; }
     
-    public bool IsVegeterian { get; set; }
+    public bool Vegeterian { get; set; }
     
+    public double Rating { get; set; }
   
-    public string Photo { get; set; }
+    public string Image { get; set; }
     
     public Category Category { get; set; }
     

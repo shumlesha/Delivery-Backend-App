@@ -12,4 +12,8 @@ public class DishInCart
     
     public Guid OrderId { get; set; }
     public virtual Order Order { get; set; }
+    
+    public Guid DishId { get; set; }
+    public virtual Dish Dish { get; set; }
+
 }

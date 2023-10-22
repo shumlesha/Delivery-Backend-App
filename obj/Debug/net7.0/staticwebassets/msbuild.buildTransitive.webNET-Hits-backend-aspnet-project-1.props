@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\webNET-Hits-backend-aspnet-project-1.props" />
-</Project>

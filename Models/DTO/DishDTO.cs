@@ -4,20 +4,24 @@ namespace webNET_Hits_backend_aspnet_project_1.Models.DTO;
 
 public class DishDTO
 {
+
+    [Required] public Guid id { get; set; }
+
     [Required]
-    public string Name { get; set; }
+    [MinLength(1)]
+    public string name { get; set; }
+    
+    public string desctiption { get; set; }
     
     [Required]
-    public double Price { get; set; }
+    public double price { get; set; }
     
-    public string Description { get; set; }
+    public string image { get; set; }
     
-    public bool IsVegeterian { get; set; }
+    public bool vegeterian { get; set; }
     
-    public string Photo { get; set; }
+    public double? rating { get; set; }
     
-    public double? RateValue { get; set; }
-    
-    public Category Category  { get; set; }
+    public Category category  { get; set; }
     
 }
