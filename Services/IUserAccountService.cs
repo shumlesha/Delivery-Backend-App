@@ -13,11 +13,17 @@ namespace webNET_Hits_backend_aspnet_project_1.Services;
 
 public interface IUserAccountService
 {
-    Task<string> UserRegister(UserDTO userDTO);
-    Task<string> UserLogin(UserDTO userDTO);
+    Task<string> UserRegister(UserRegisterModel userRegisterModel);
+    Task<string> UserLogin(LoginCredentials loginCredentials);
     string GetJwtToken(User user);
     string PasswordToCrypto(string password);
     bool CheckPass(string possiblePassword, string existingPassword);
+
+    Task<UserDTO> UserGetProfile(Guid userID);
+
+    Task UserEditProfile(UserEditModel userEditModel, Guid guid);
+
+    Task UserLogoutProfile(string token);
 }
 
 
@@ -31,20 +37,20 @@ public class UserAccountService: IUserAccountService
         _JwtParams = jwtParamsOptions.Value;
     }
 
-    public async Task<string> UserRegister(UserDTO userDTO)
+    public async Task<string> UserRegister(UserRegisterModel userRegisterModel)
     {
         var user = new User
         {
             Id = Guid.NewGuid(),
-            FullName = userDTO.fullName,
-            BirthDate = userDTO.birthDate,
-            Gender = userDTO.gender,
-            Phone = userDTO.phoneNumber,
-            Email = userDTO.email,
-            Address = userDTO.adressId,
-            Password = PasswordToCrypto(userDTO.password)
+            FullName = userRegisterModel.fullName,
+            BirthDate = userRegisterModel.birthDate,
+            Gender = userRegisterModel.gender,
+            Phone = userRegisterModel.phoneNumber,
+            Email = userRegisterModel.email,
+            Address = userRegisterModel.addressId,
+            Password = PasswordToCrypto(userRegisterModel.password)
         };
-        var possibleUser = _context.Users.SingleOrDefault(u => u.Email == userDTO.email);
+        var possibleUser = _context.Users.SingleOrDefault(u => u.Email == userRegisterModel.email);
 
         if (possibleUser != null)
         {
@@ -60,22 +66,81 @@ public class UserAccountService: IUserAccountService
         return GetJwtToken(user);
     }
     
-    public async Task<string> UserLogin(UserDTO userDTO)
+    public async Task<string> UserLogin(LoginCredentials loginCredentials)
     {
-        var user = _context.Users.SingleOrDefault(user => user.Email == userDTO.email);
+        var user = _context.Users.SingleOrDefault(user => user.Email == loginCredentials.email);
 
         if (user == null)
         {
             throw new AuthenticationException();
         }
-        else if (!CheckPass(userDTO.password, user.Password))
+        else if (!CheckPass(loginCredentials.password, user.Password))
         {
             throw new AuthenticationException(); 
         }
-
+        
+        var bannedToken = _context.BannedTokens.FirstOrDefault(tok => tok.UserID == user.Id);
+        if (bannedToken != null)
+        {
+            _context.BannedTokens.Remove(bannedToken);
+            await _context.SaveChangesAsync();
+        }
         return GetJwtToken(user);
     }
 
+
+    public async Task UserLogoutProfile(string token)
+    {
+        var tokenhandler = new JwtSecurityTokenHandler();
+        var normalToken = tokenhandler.ReadToken(token) as JwtSecurityToken;
+        var guid = new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
+
+        
+        _context.BannedTokens.Add(new BannedToken
+        {
+            Id = Guid.NewGuid(),
+            UserID = guid,
+            TokenString = token,
+            AdditionDate = DateTime.UtcNow
+        });
+
+        await _context.SaveChangesAsync();
+    }
+    
+    
+    public async Task<UserDTO> UserGetProfile(Guid userID)
+    {
+        var user = await _context.Users.FindAsync(userID);
+
+        return new UserDTO
+        {
+            id = user.Id,
+            fullName = user.FullName,
+            birthDate = user.BirthDate,
+            gender = user.Gender,
+            address = user.Address,
+            email = user.Email,
+            phoneNumber = user.Phone
+        };
+    }
+
+    public async Task UserEditProfile(UserEditModel userEditModel, Guid guid)
+    {
+        var user = await _context.Users.FindAsync(guid);
+
+        user.FullName = userEditModel.fullName;
+        user.BirthDate = userEditModel.birthDate;
+        user.Gender = userEditModel.gender;
+        user.Address = userEditModel.addressId;
+        user.Phone = userEditModel.phoneNumber;
+
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
+
+    }
+    
+    
+    
     public string GetJwtToken(User user)
     {
         var claims = new List<Claim>
