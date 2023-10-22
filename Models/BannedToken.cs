@@ -1,4 +1,6 @@
-﻿namespace webNET_Hits_backend_aspnet_project_1.Models;
+﻿using System;
+
+namespace webNET_Hits_backend_aspnet_project_1.Models;
 
 public class BannedToken
 {
