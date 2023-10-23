@@ -7,7 +7,8 @@ namespace webNET_Hits_backend_aspnet_project_1.Services;
 public interface IOrderService
 {
     Task<OrderDTO> GetOrder(Guid id);
-}
+    Task<List<OrderInfoDTO>> GetOrdersList(Guid userID);
+}   
 
 public class OrderService : IOrderService
 {
@@ -43,5 +44,21 @@ public class OrderService : IOrderService
                 }).ToList(),
             Address = queriedOrder.Address
         };
+    }
+
+    public async Task<List<OrderInfoDTO>> GetOrdersList(Guid userID)
+    {
+        var allUserOrders = await _context.Orders.Where(order => order.UserId == userID).ToListAsync();
+
+        return allUserOrders.Select(
+            order => new OrderInfoDTO
+            {
+                id = order.Id,
+                deliveryTime = order.DeliveryTime,
+                orderTime = order.OrderTime,
+                status = order.Status,
+                price = order.Price
+
+            }).ToList();
     }
 }
