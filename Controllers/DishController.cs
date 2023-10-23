@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
@@ -38,7 +39,7 @@ public class DishController: ControllerBase
     }
     
 
-
+    [Authorize]
     [HttpGet("{id}/rating/check")]
     public bool CheckRatePossibility(Guid id)
     {
@@ -51,7 +52,8 @@ public class DishController: ControllerBase
 
         return _dishService.CheckRatePossibility(id, userID);
     }
-
+    
+    [Authorize]
     [HttpPost("{id}/rating")]
     public IActionResult RateDish(Guid id, int ratingScore)
     {
