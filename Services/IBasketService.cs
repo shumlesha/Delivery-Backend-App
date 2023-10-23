@@ -9,6 +9,8 @@ public interface IBasketService
     Task<List<DishInCartDTO>> GetCart(Guid userID);
 
     Task AddDish(Guid id, Guid userID);
+
+    Task RemoveDish(Guid dishId, Guid userID, bool increase);
 }
 
 
@@ -63,6 +65,23 @@ public class BasketService : IBasketService
                     Count = 1
                 }
             );
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task RemoveDish(Guid dishId, Guid userID, bool increase)
+    {
+        var dishInCart = await _context.DishesInCart.FirstOrDefaultAsync(dishView =>
+            dishView.DishId == dishId && dishView.UserId == userID && dishView.OrderId == null);
+
+        if (increase && dishInCart.Count > 1)
+        {
+            dishInCart.Count -= 1;
+        }
+        else
+        {
+            _context.DishesInCart.Remove(dishInCart);
         }
 
         await _context.SaveChangesAsync();

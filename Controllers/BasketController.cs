@@ -45,5 +45,21 @@ public class BasketController: ControllerBase
         
         return Ok();
     }
+
+    [Authorize]
+    [HttpDelete("dish/{dishId}")]
+
+    public async Task<IActionResult> RemoveDish(Guid dishId, bool increase = false)
+    {
+        var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+        var tokenhandler = new JwtSecurityTokenHandler();
+        var normalToken = tokenhandler.ReadToken(token) as JwtSecurityToken;
+        var userID = new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
+
+        await _basketService.RemoveDish(dishId, userID, increase);
+
+        return Ok();
+    }
     
 }
