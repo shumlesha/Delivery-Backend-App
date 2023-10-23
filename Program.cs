@@ -63,6 +63,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddScoped<IUserAccountService, UserAccountService>();
 builder.Services.AddScoped<IDishService, DishService>();
 builder.Services.AddScoped<IBasketService, BasketService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 //DB:
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");

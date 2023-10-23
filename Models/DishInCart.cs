@@ -9,10 +9,13 @@ public class DishInCart
     [Key]
     public Guid Id { get; set; }
     
+    
+    public string Name { get; set; }
+    
     [Required]
     public int Count { get; set; }
     
-
+    
     public Guid? OrderId { get; set; }
     public virtual Order Order { get; set; }
     
