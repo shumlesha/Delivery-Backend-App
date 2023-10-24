@@ -56,4 +56,13 @@ public class OrderController: ControllerBase
 
         return Ok();
     }
+
+    [Authorize]
+    [HttpPost("{id}/status")]
+    public async Task<ActionResult> ConfirmOrder(Guid id)
+    {
+        await _orderService.ConfirmOrder(id);
+
+        return Ok();
+    }
 }

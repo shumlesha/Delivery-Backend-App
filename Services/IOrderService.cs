@@ -10,6 +10,8 @@ public interface IOrderService
     Task<List<OrderInfoDTO>> GetOrdersList(Guid userID);
 
     Task MakeOrder(Guid userID, OrderCreateDTO orderCreateDTO);
+
+    Task ConfirmOrder(Guid id);
 }   
 
 public class OrderService : IOrderService
@@ -92,5 +94,16 @@ public class OrderService : IOrderService
         }
 
         await _context.SaveChangesAsync();
-    } 
+    }
+
+
+    public async Task ConfirmOrder(Guid id)
+    {
+        var order = await _context.Orders.FindAsync(id);
+
+        order.Status = Status.Delivered;
+        _context.Update(order);
+
+        await _context.SaveChangesAsync();
+    }
 }
