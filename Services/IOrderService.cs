@@ -8,6 +8,8 @@ public interface IOrderService
 {
     Task<OrderDTO> GetOrder(Guid id);
     Task<List<OrderInfoDTO>> GetOrdersList(Guid userID);
+
+    Task MakeOrder(Guid userID, OrderCreateDTO orderCreateDTO);
 }   
 
 public class OrderService : IOrderService
@@ -22,6 +24,7 @@ public class OrderService : IOrderService
     public async Task<OrderDTO> GetOrder(Guid id)
     {
         var queriedOrder = await _context.Orders.Include(order => order.DishesInCarts)
+            .ThenInclude(dishInCart => dishInCart.Dish)
             .FirstOrDefaultAsync(order => order.Id == id);
 
         return new OrderDTO
@@ -35,7 +38,7 @@ public class OrderService : IOrderService
                 .Select(dishView => new DishInCartDTO
                 {
                     Id = dishView.DishId,
-                    Name = dishView.Name,
+                    Name = dishView.Dish.Name,
                     Price = dishView.Dish.Price,
                     TotalPrice = dishView.Count * dishView.Dish.Price,
                     Amount = dishView.Count,
@@ -61,4 +64,33 @@ public class OrderService : IOrderService
 
             }).ToList();
     }
+
+    public async Task MakeOrder(Guid userID, OrderCreateDTO orderCreateDTO)
+    {
+        var userWantedDishes = await _context.DishesInCart.Where(dishView => dishView.UserId == userID &&
+                                                                             dishView.OrderId == null)
+            .Include(dishInCart => dishInCart.Dish).ToListAsync();
+
+        var neworderid = Guid.NewGuid();
+        _context.Orders.Add(
+            new Order
+            {
+                Id = neworderid,
+                DeliveryTime = orderCreateDTO.deliveryTime,
+                OrderTime = DateTime.UtcNow,
+                Price = userWantedDishes.Sum(dishView => dishView.Count * dishView.Dish.Price),
+                Address = orderCreateDTO.addressId.ToString(),
+                Status = Status.InProcess,
+                UserId = userID
+            });
+
+        await _context.SaveChangesAsync();
+
+        foreach (var dishView in userWantedDishes)
+        {
+            dishView.OrderId = neworderid;
+        }
+
+        await _context.SaveChangesAsync();
+    } 
 }

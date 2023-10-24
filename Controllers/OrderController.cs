@@ -41,4 +41,19 @@ public class OrderController: ControllerBase
 
         return Ok(await _orderService.GetOrdersList(userID));
     }
+    
+    [Authorize]
+    [HttpPost]
+    public async Task<ActionResult> MakeOrder(OrderCreateDTO orderCreateDTO)
+    {
+        var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+        var tokenhandler = new JwtSecurityTokenHandler();
+        var normalToken = tokenhandler.ReadToken(token) as JwtSecurityToken;
+        var userID = new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
+
+        await _orderService.MakeOrder(userID, orderCreateDTO);
+
+        return Ok();
+    }
 }
