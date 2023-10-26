@@ -63,12 +63,14 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddScoped<IUserAccountService, UserAccountService>();
 builder.Services.AddScoped<IDishService, DishService>();
 builder.Services.AddScoped<IBasketService, BasketService>();
+builder.Services.AddScoped<IAddressService, AddressService>();
 
 //DB:
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connection));
+builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connection));
 
-
+var connection2 = builder.Configuration.GetConnectionString("GarConnection");
+builder.Services.AddDbContext<GarDbContext>(options => options.UseNpgsql(connection2));
 
 
 var app = builder.Build();

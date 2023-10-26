@@ -6,10 +6,10 @@ namespace webNET_Hits_backend_aspnet_project_1.Models;
 public class House
 {
     [Key]
-    public Guid Id { get; set; }
+    public long Id { get; set; }
     
     [Required]
-    public Guid ObjectId { get; set; }
+    public long ObjectId { get; set; }
     
     [Required]
     public Guid ObjectGuid { get; set; }
