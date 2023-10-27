@@ -43,6 +43,16 @@ public class UserAccountService: IUserAccountService
 
     public async Task<string> UserRegister(UserRegisterModel userRegisterModel)
     {
+        if (userRegisterModel == null)
+        {
+            throw new ArgumentNullException();
+        }
+        
+        if (!(new[] { "Male", "Female" }.Contains(userRegisterModel.gender)))
+        {
+            throw new Exception("Wrong gender");
+        }
+        
         var user = new User
         {
             Id = Guid.NewGuid(),
@@ -72,15 +82,20 @@ public class UserAccountService: IUserAccountService
     
     public async Task<string> UserLogin(LoginCredentials loginCredentials)
     {
+        if (loginCredentials == null)
+        {
+            throw new ArgumentNullException();
+        }
+        
         var user = _context.Users.SingleOrDefault(user => user.Email == loginCredentials.email);
 
         if (user == null)
         {
-            throw new AuthenticationException();
+            throw new Exception($"User with the email {loginCredentials.email} does not exist");
         }
         else if (!CheckPass(loginCredentials.password, user.Password))
         {
-            throw new AuthenticationException(); 
+            throw new Exception($"Password is wrong!");
         }
         
         var bannedToken = _context.BannedTokens.FirstOrDefault(tok => tok.UserID == user.Id);
@@ -115,7 +130,7 @@ public class UserAccountService: IUserAccountService
     public async Task<UserDTO> UserGetProfile(Guid userID)
     {
         var user = await _context.Users.FindAsync(userID);
-
+        
         return new UserDTO
         {
             id = user.Id,
@@ -130,8 +145,20 @@ public class UserAccountService: IUserAccountService
 
     public async Task UserEditProfile(UserEditModel userEditModel, Guid guid)
     {
+        if (userEditModel == null)
+        {
+            throw new ArgumentNullException();
+        }
+        
         var user = await _context.Users.FindAsync(guid);
 
+        if (!(new[] { "Male", "Female" }.Contains(userEditModel.gender)))
+        {
+            throw new Exception("Wrong gender");
+        }
+        
+        
+        
         user.FullName = userEditModel.fullName;
         user.BirthDate = userEditModel.birthDate;
         user.Gender = userEditModel.gender;

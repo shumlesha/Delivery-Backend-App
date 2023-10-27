@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
@@ -23,25 +24,37 @@ public class UserAccountController: ControllerBase
         _userAccountService = userAccount;
     }
     
-    
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [HttpPost("register")]
     public async Task<IActionResult> UserRegister(UserRegisterModel userRegisterModel)
     {
         try
         {
             var userTOKEN = await _userAccountService.UserRegister(userRegisterModel);
-            return Ok(new {
+            return Ok(new
+            {
                 token = userTOKEN
             });
         }
-        catch
+        catch (ArgumentNullException)
         {
-            return BadRequest();
+            return BadRequest(new Response { status = "400", message = "Entered null data" });
+        }
+        catch (DbUpdateException)
+        {
+            return BadRequest(new Response { status = "400", message = "User registration failed" });
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new Response { message = e.Message });
         }
         
         
     }
-
+    
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [HttpPost("login")]
     public async Task<IActionResult> UserLogin(LoginCredentials loginCredentials)
     {
@@ -52,9 +65,14 @@ public class UserAccountController: ControllerBase
             return Ok(new { token = userTOKEN });
 
         }
-        catch
+        catch (ArgumentNullException)
         {
-            return BadRequest();
+            return BadRequest(new Response { status = "400", message = "Entered null data" });
+        }
+        
+        catch (Exception e)
+        {
+            return BadRequest(new Response { message = e.Message });
         }
         
        
@@ -83,18 +101,33 @@ public class UserAccountController: ControllerBase
         return await _userAccountService.UserGetProfile(new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value));
     }
 
+    
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [Authorize]
     [HttpPut("profile")]
     public async Task<IActionResult> UserEditProfile(UserEditModel userEditModel)
     {
-        var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        try
+        {
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
-        var tokenhandler = new JwtSecurityTokenHandler();
-        var normalToken = tokenhandler.ReadToken(token) as JwtSecurityToken;
-        var guid = new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
+            var tokenhandler = new JwtSecurityTokenHandler();
+            var normalToken = tokenhandler.ReadToken(token) as JwtSecurityToken;
+            var guid = new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
         
-        await _userAccountService.UserEditProfile(userEditModel, guid);
+            await _userAccountService.UserEditProfile(userEditModel, guid);
 
-        return Ok();
+            return Ok();
+        }
+        catch (ArgumentNullException)
+        {
+            return BadRequest(new Response { status = "400", message = "Entered null data" });
+        }
+        
+        catch (Exception e)
+        {
+            return BadRequest(new Response { message = e.Message });
+        }
     }
 }
