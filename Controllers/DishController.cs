@@ -31,11 +31,19 @@ public class DishController: ControllerBase
 
 
 
-
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [HttpGet("{id}")]
     public ActionResult<DishDTO> GetDish(Guid id)
     {
-        return _dishService.GetDish(id);
+        try
+        {
+            return _dishService.GetDish(id);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new Response { status = "400", message = e.Message });
+        }
     }
     
 
@@ -53,25 +61,35 @@ public class DishController: ControllerBase
         return _dishService.CheckRatePossibility(id, userID);
     }
     
+    
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [Authorize]
     [HttpPost("{id}/rating")]
     public IActionResult RateDish(Guid id, int ratingScore)
     {
-        var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        try
+        {
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
-        var tokenhandler = new JwtSecurityTokenHandler();
-        var normalToken = tokenhandler.ReadToken(token) as JwtSecurityToken;
-        var userID = new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
+            var tokenhandler = new JwtSecurityTokenHandler();
+            var normalToken = tokenhandler.ReadToken(token) as JwtSecurityToken;
+            var userID = new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
         
-        bool israted = _dishService.RateDish(id, ratingScore, userID);
+            bool israted = _dishService.RateDish(id, ratingScore, userID);
 
-        if (israted)
-        {
-            return Ok();
+            if (israted)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
-        else
+        catch (Exception e)
         {
-            return BadRequest();
+            return BadRequest(new Response { status = "400", message = e.Message });
         }
         
     }

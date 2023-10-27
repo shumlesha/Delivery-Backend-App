@@ -29,7 +29,7 @@ public class DishService: IDishService
     {
         IQueryable<Dish> query = _context.Dishes;
         
-        if (categories != null && categories.Count > 0)
+        if (categories.Count > 0)
         {
             query = query.Where(dish => categories.Contains(dish.Category));
         }
@@ -63,7 +63,7 @@ public class DishService: IDishService
                 break;
         }
         
-        int pageSize = 10;
+        int pageSize = 6;
         var dishes = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
         var dishToDTO = dishes.Select(dish =>
@@ -100,6 +100,11 @@ public class DishService: IDishService
         var dish = _context.Dishes.FirstOrDefault(dish =>
             dish.Id == id);
 
+        if (dish == null)
+        {
+            throw new Exception("Dish not found");
+        }
+
         return new DishDTO
         {
             id = dish.Id,
@@ -126,6 +131,11 @@ public class DishService: IDishService
     {
         var allUserCarts = _context.Orders.Where(order =>
             order.UserId == userID).SelectMany(order => order.DishesInCarts).ToList();
+
+        if (allUserCarts == null)
+        {
+            throw new Exception("User doesn't have ordered dishes!");
+        }
         
         var isOrdered = allUserCarts.Any(dishInCart => dishInCart.DishId == id);
 
@@ -150,6 +160,7 @@ public class DishService: IDishService
                 UserId = userID
             };
             _context.Ratings.Add(settedRating);
+            _context.SaveChanges();
         }
         
          
@@ -161,7 +172,10 @@ public class DishService: IDishService
             dish.Rating = _context.Ratings.Where(rating => rating.DishId == id).Average(rating => rating.Value);
             
         }
-        
+        else
+        {
+            throw new Exception("Dish not found");
+        }
         
         _context.SaveChanges();
 
