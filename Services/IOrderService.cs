@@ -29,6 +29,11 @@ public class OrderService : IOrderService
             .ThenInclude(dishInCart => dishInCart.Dish)
             .FirstOrDefaultAsync(order => order.Id == id);
 
+        if (queriedOrder == null)
+        {
+            throw new Exception("No order with such id!");
+        }
+            
         return new OrderDTO
         {
             Id = queriedOrder.Id,
@@ -73,6 +78,11 @@ public class OrderService : IOrderService
                                                                              dishView.OrderId == null)
             .Include(dishInCart => dishInCart.Dish).ToListAsync();
 
+        if (userWantedDishes == null)
+        {
+            throw new Exception("No dishes in cart!");
+        }
+        
         var neworderid = Guid.NewGuid();
         _context.Orders.Add(
             new Order
@@ -101,6 +111,11 @@ public class OrderService : IOrderService
     {
         var order = await _context.Orders.FindAsync(id);
 
+        if (order == null)
+        {
+            throw new Exception("No order with such id!");
+        }
+        
         order.Status = Status.Delivered;
         _context.Update(order);
 

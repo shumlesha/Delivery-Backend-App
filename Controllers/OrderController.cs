@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 using webNET_Hits_backend_aspnet_project_1.Services;
 
@@ -20,12 +21,20 @@ public class OrderController: ControllerBase
         _orderService = orderService;
     }
 
-
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [Authorize]
     [HttpGet("{id}")]
     public async Task<ActionResult<OrderDTO>> GetOrder(Guid id)
     {
-        return Ok(await _orderService.GetOrder(id));
+        try
+        {
+            return Ok(await _orderService.GetOrder(id));
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new Response { status = "400", message = e.Message });
+        }
 
     }
 
@@ -42,27 +51,47 @@ public class OrderController: ControllerBase
         return Ok(await _orderService.GetOrdersList(userID));
     }
     
+    
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [Authorize]
     [HttpPost]
     public async Task<ActionResult> MakeOrder(OrderCreateDTO orderCreateDTO)
     {
-        var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        try
+        {
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
-        var tokenhandler = new JwtSecurityTokenHandler();
-        var normalToken = tokenhandler.ReadToken(token) as JwtSecurityToken;
-        var userID = new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
+            var tokenhandler = new JwtSecurityTokenHandler();
+            var normalToken = tokenhandler.ReadToken(token) as JwtSecurityToken;
+            var userID = new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
 
-        await _orderService.MakeOrder(userID, orderCreateDTO);
+            await _orderService.MakeOrder(userID, orderCreateDTO);
 
-        return Ok();
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new Response { status = "400", message = e.Message });
+        }
     }
-
+    
+    
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [Authorize]
     [HttpPost("{id}/status")]
     public async Task<ActionResult> ConfirmOrder(Guid id)
     {
-        await _orderService.ConfirmOrder(id);
+        try
+        {
+            await _orderService.ConfirmOrder(id);
 
-        return Ok();
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new Response { status = "400", message = e.Message });
+        }
     }
 }
