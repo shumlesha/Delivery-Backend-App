@@ -56,6 +56,10 @@ public class BasketService : IBasketService
         }
         else
         {
+            if (await _context.Dishes.FindAsync(id) == null)
+            {
+                throw new Exception("Dish not found");
+            }
             await _context.DishesInCart.AddAsync(
             
                 new DishInCart
@@ -72,6 +76,10 @@ public class BasketService : IBasketService
 
     public async Task RemoveDish(Guid dishId, Guid userID, bool increase)
     {
+        if (await _context.Dishes.FindAsync(dishId) == null)
+        {
+            throw new Exception("Dish not found");
+        }
         var dishInCart = await _context.DishesInCart.FirstOrDefaultAsync(dishView =>
             dishView.DishId == dishId && dishView.UserId == userID && dishView.OrderId == null);
 
