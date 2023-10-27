@@ -18,7 +18,7 @@ public class User
     public DateTime BirthDate { get; set; }
     
     [Required]
-    public string Gender { get; set; }
+    public Gender Gender { get; set; }
     
     [Required]
     [Phone]

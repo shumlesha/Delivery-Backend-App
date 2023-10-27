@@ -48,7 +48,7 @@ public class UserAccountService: IUserAccountService
             throw new ArgumentNullException();
         }
         
-        if (!(new[] { "Male", "Female" }.Contains(userRegisterModel.gender)))
+        if (!(userRegisterModel.gender == Gender.Male || userRegisterModel.gender == Gender.Female))
         {
             throw new Exception("Wrong gender");
         }
@@ -152,11 +152,6 @@ public class UserAccountService: IUserAccountService
         
         var user = await _context.Users.FindAsync(guid);
 
-        if (!(new[] { "Male", "Female" }.Contains(userEditModel.gender)))
-        {
-            throw new Exception("Wrong gender");
-        }
-        
         
         
         user.FullName = userEditModel.fullName;

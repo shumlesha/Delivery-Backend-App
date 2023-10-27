@@ -16,7 +16,7 @@ public class UserDTO
     public DateTime birthDate { get; set; }
     
     [Required]
-    public string gender { get; set; }
+    public Gender gender { get; set; }
     
     [Required]
     [Phone]

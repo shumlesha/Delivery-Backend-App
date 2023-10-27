@@ -13,7 +13,7 @@ public class UserRegisterModel
     [MinLength(6)]
     public string password { get; set; }
     
-    
+    [Required]
     [EmailAddress]
     public string email { get; set; }
     
@@ -24,7 +24,7 @@ public class UserRegisterModel
     public DateTime birthDate { get; set; }
     
     [Required]
-    public string gender { get; set; }
+    public Gender gender { get; set; }
     
     [Phone]
     public string phoneNumber { get; set; }

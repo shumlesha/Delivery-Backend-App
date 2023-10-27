@@ -14,6 +14,7 @@ public class DishInCartDTO
     public int Amount { get; set; }
     
     [Required]
+    [MinLength(1)]
     public string Name { get; set; }
     
     [Required]
@@ -22,5 +23,5 @@ public class DishInCartDTO
     [Required]
     public double TotalPrice { get; set; }
     
-    public string Image { get; set; }
+    public string? Image { get; set; }
 }
