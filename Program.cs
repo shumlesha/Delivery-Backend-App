@@ -65,7 +65,7 @@ builder.Services.AddScoped<IDishService, DishService>();
 builder.Services.AddScoped<IBasketService, BasketService>();
 builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
-
+builder.Services.AddHostedService<CleaningService>();
 
 //DB:
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");

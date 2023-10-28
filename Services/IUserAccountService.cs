@@ -180,7 +180,7 @@ public class UserAccountService: IUserAccountService
             issuer: _JwtParams.Issuer,
             audience: _JwtParams.Issuer,
             claims: claims,
-            expires: DateTime.UtcNow.AddDays(1), 
+            expires: DateTime.UtcNow.AddHours(3), 
             signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_JwtParams.Key)), SecurityAlgorithms.HmacSha256)
 
         );
