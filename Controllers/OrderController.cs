@@ -20,7 +20,10 @@ public class OrderController: ControllerBase
     {
         _orderService = orderService;
     }
-
+    
+    /// <summary>
+    /// Get information about concrete order
+    /// </summary>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [Authorize]
@@ -38,6 +41,10 @@ public class OrderController: ControllerBase
 
     }
 
+    
+    /// <summary>
+    /// Get a list of orders
+    /// </summary>
     [Authorize]
     [HttpGet]
     public async Task<ActionResult<List<OrderInfoDTO>>> GetOrdersList()
@@ -52,6 +59,9 @@ public class OrderController: ControllerBase
     }
     
     
+    /// <summary>
+    /// Creating the order from dishes in basket
+    /// </summary>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [Authorize]
@@ -77,6 +87,9 @@ public class OrderController: ControllerBase
     }
     
     
+    /// <summary>
+    /// Confirm order delivery
+    /// </summary>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [Authorize]
