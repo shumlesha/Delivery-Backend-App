@@ -56,6 +56,9 @@ public class UserAccountController: ControllerBase
         
     }
     
+    /// <summary>
+    /// Log in to the system
+    /// </summary>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [HttpPost("login")]
@@ -81,6 +84,9 @@ public class UserAccountController: ControllerBase
        
     }
     
+    /// <summary>
+    /// Log out system user
+    /// </summary>
     [Authorize]
     [HttpPost("logout")]
     public async Task<IActionResult> UserLogoutProfile()
@@ -91,7 +97,9 @@ public class UserAccountController: ControllerBase
     }
     
     
-    
+    /// <summary>
+    /// Get user profile
+    /// </summary>
     [Authorize]
     [HttpGet("profile")]
     public async Task<UserDTO> UserGetProfile()
@@ -105,6 +113,9 @@ public class UserAccountController: ControllerBase
     }
 
     
+    /// <summary>
+    /// Edit user Profile
+    /// </summary>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [Authorize]
