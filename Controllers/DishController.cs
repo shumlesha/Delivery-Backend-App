@@ -21,7 +21,10 @@ public class DishController: ControllerBase
     {
         _dishService = dishService;
     }
-
+    
+    /// <summary>
+    /// Get a list of dishes (menu)
+    /// </summary>
     [HttpGet]
     public ActionResult<DishPagedListDTO> GetListOfDishes([FromQuery] List<Category> categories, bool vegetarian = false,
         DishSorting? sorting = null, int page = 1)
@@ -30,7 +33,9 @@ public class DishController: ControllerBase
     }
 
 
-
+    /// <summary>
+    /// Get information about concrete dish
+    /// </summary>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [HttpGet("{id}")]
@@ -46,7 +51,10 @@ public class DishController: ControllerBase
         }
     }
     
-
+    
+    /// <summary>
+    /// Checks if user is able to set rating of the dish
+    /// </summary>
     [Authorize]
     [HttpGet("{id}/rating/check")]
     public bool CheckRatePossibility(Guid id)
@@ -62,6 +70,9 @@ public class DishController: ControllerBase
     }
     
     
+    /// <summary>
+    /// Set a rating for a dish
+    /// </summary>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [Authorize]
