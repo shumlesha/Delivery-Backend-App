@@ -19,6 +19,9 @@ public class BasketController: ControllerBase
         _basketService = basketService;
     }
     
+    /// <summary>
+    /// Get user cart
+    /// </summary>
     [Authorize]
     [HttpGet]
     public async Task<ActionResult<List<DishInCartDTO>>> GetCart()
@@ -32,6 +35,10 @@ public class BasketController: ControllerBase
         return Ok(await _basketService.GetCart(userID));
     }
     
+    
+    /// <summary>
+    /// Add dish to cart
+    /// </summary>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [Authorize]
@@ -56,7 +63,11 @@ public class BasketController: ControllerBase
         }
         
     }
-
+    
+    
+    /// <summary>
+    /// Decrease the number of dishes in the cart(if increase = true), or remove the dish completely(increase = false)
+    /// </summary>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [Authorize]
