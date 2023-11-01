@@ -24,6 +24,9 @@ public class UserAccountController: ControllerBase
         _userAccountService = userAccount;
     }
     
+    /// <summary>
+    /// Register new user
+    /// </summary>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [HttpPost("register")]

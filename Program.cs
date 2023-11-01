@@ -57,6 +57,9 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "Bearer"
     });
     
+    options.SwaggerDoc("v1", new() { Title = "My API", Version = "v1" });
+    var filePath = Path.Combine(AppContext.BaseDirectory, "webNET-Hits-backend-aspnet-project-1.xml");
+    options.IncludeXmlComments(filePath);
     
     
     options.OperationFilter<OperationFilter>();
