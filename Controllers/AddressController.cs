@@ -21,7 +21,9 @@ public class AddressController: ControllerBase
         return Ok(await _addressService.SearchAddresses(parentObjectId, query));
     }
 
-
+    /// <summary>
+    /// Same method with multiple routes, for backward compatibility
+    /// </summary>
     [HttpGet("getaddresschain")]
     public async Task<IActionResult> GetAddressChain(Guid objectGuid)
     {
