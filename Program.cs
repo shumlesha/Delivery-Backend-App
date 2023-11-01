@@ -30,6 +30,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 ValidateIssuerSigningKey = true,
                 ValidateAudience = true,
                 ValidAudience = "BackOfDeliveryService",
+                ValidateLifetime = true,
                 ValidIssuer = jwtConfig["Issuer"],
                 IssuerSigningKey = new SymmetricSecurityKey(key)
             };
