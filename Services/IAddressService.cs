@@ -45,16 +45,16 @@ public class AddressService : IAddressService
         };
         
         
-        var commonTable = _garContext.AsAddrObjs.Join(
+        var commonObjTable = _garContext.AsAddrObjs.Join(
             _garContext.AsAdmHierarchies,
             obj => obj.Objectid,
             hierarchy => hierarchy.Objectid,
             (obj, hierarchy) => new { obj, hierarchy }
         ).Where(common =>
-            parentObjectId == common.hierarchy.Parentobjid &&
+            parentObjectId == common.hierarchy.Parentobjid && common.obj.Isactual == 1 &&
             common.obj.Name.Contains(query));
 
-        return await commonTable.Select(line => new SearchAddressModel
+        var allObjs = await commonObjTable.Select(line => new SearchAddressModel
         {
             objectId = line.obj.Objectid,
             objectGuid = line.obj.Objectguid,
@@ -62,7 +62,34 @@ public class AddressService : IAddressService
             objectLevel = (GarAddressLevel)(int.Parse(line.obj.Level) - 1),
             objectLevelText = allLevelsTexted[int.Parse(line.obj.Level) - 1]
         }).ToListAsync();
+        
+        var commonHouseTable = await _garContext.AsAdmHierarchies.Join(
+                _garContext.AsHouses,
+                hierarchy => hierarchy.Objectid,
+                house => house.Objectid,
+                (hierarchy, house) => new { hierarchy, house }
+            )
+            .Where(common => parentObjectId == common.hierarchy.Parentobjid)
+            .ToListAsync();
 
+        var filteredHouseTable = commonHouseTable
+            .Where(common =>
+                GetBuildingText(common.house.Housetype, common.house.Housenum, common.house.Addtype1, common.house.Addnum1,
+                    common.house.Addtype2, common.house.Addnum2).Contains(query) &&
+                common.house.Isactual == 1
+            );
+
+        var allBuilds = filteredHouseTable.Select(line => new SearchAddressModel
+        {
+            objectId = line.house.Objectid,
+            objectGuid = line.house.Objectguid,
+            text = GetBuildingText(line.house.Housetype, line.house.Housenum, line.house.Addtype1, line.house.Addnum1,
+                line.house.Addtype2, line.house.Addnum2),
+            objectLevel = GarAddressLevel.Building,
+            objectLevelText = "Здание (сооружение)"
+        });
+
+        return allObjs.Union(allBuilds).OrderBy(obj => obj.objectLevel).ToList();
     }
 
 
