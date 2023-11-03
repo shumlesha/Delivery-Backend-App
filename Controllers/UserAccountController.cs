@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using webNET_Hits_backend_aspnet_project_1.Exceptions;
 using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 using webNET_Hits_backend_aspnet_project_1.Services;
@@ -29,6 +30,7 @@ public class UserAccountController: ControllerBase
     /// </summary>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status409Conflict)]
     [HttpPost("register")]
     public async Task<IActionResult> UserRegister(UserRegisterModel userRegisterModel)
     {
@@ -44,13 +46,17 @@ public class UserAccountController: ControllerBase
         {
             return BadRequest(new Response { status = "400", message = "Entered null data" });
         }
+        catch (UserAlreadyExistsException)
+        {
+            return Conflict(new Response { status = "409" , message = "User already exists"});
+        }
         catch (DbUpdateException)
         {
             return BadRequest(new Response { status = "400", message = "User registration failed" });
         }
         catch (Exception e)
         {
-            return BadRequest(new Response { message = e.Message });
+            return BadRequest(new Response {status = "400", message = e.Message });
         }
         
         
@@ -61,6 +67,8 @@ public class UserAccountController: ControllerBase
     /// </summary>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status401Unauthorized)]
     [HttpPost("login")]
     public async Task<IActionResult> UserLogin(LoginCredentials loginCredentials)
     {
@@ -75,10 +83,17 @@ public class UserAccountController: ControllerBase
         {
             return BadRequest(new Response { status = "400", message = "Entered null data" });
         }
-        
+        catch (UserNotFoundException)
+        {
+            return NotFound(new Response { status = "404", message = "User not found" });
+        }
+        catch (InvalidPasswordException)
+        {
+            return Unauthorized(new Response { status = "401", message = "User entered invalid password!" });
+        }
         catch (Exception e)
         {
-            return BadRequest(new Response { message = e.Message });
+            return BadRequest(new Response { status="400", message = e.Message });
         }
         
        

@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using webNET_Hits_backend_aspnet_project_1.Exceptions;
 using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 
@@ -50,7 +51,7 @@ public class UserAccountService: IUserAccountService
         
         if (!(userRegisterModel.gender == Gender.Male || userRegisterModel.gender == Gender.Female))
         {
-            throw new Exception("Wrong gender");
+            throw new ArgumentException("Wrong gender");
         }
         
         var user = new User
@@ -68,7 +69,7 @@ public class UserAccountService: IUserAccountService
 
         if (possibleUser != null)
         {
-            throw new Exception("User already exists");
+            throw new UserAlreadyExistsException("User already exists");
         }
         
         
@@ -91,11 +92,11 @@ public class UserAccountService: IUserAccountService
 
         if (user == null)
         {
-            throw new Exception($"User with the email {loginCredentials.email} does not exist");
+            throw new UserNotFoundException($"User with the email {loginCredentials.email} does not exist");
         }
         else if (!CheckPass(loginCredentials.password, user.Password))
         {
-            throw new Exception($"Password is wrong!");
+            throw new InvalidPasswordException($"Password is wrong!");
         }
         
         var bannedToken = _context.BannedTokens.FirstOrDefault(tok => tok.UserID == user.Id);
