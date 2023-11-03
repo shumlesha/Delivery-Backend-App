@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 using System.Linq;
+using webNET_Hits_backend_aspnet_project_1.Exceptions;
+
 namespace webNET_Hits_backend_aspnet_project_1.Services;
 
 public interface IDishService
@@ -27,6 +29,11 @@ public class DishService: IDishService
 
     public DishPagedListDTO GetListOfDishes(List<Category> categories, bool vegetarian, DishSorting? sorting, int page)
     {
+        if (page < 1)
+        {
+            throw new WrongPageNumException("Page number is less than 1!");
+        }
+        
         IQueryable<Dish> query = _context.Dishes;
         
         if (categories.Count > 0)
@@ -102,7 +109,7 @@ public class DishService: IDishService
 
         if (dish == null)
         {
-            throw new Exception("Dish not found");
+            throw new DishNotFoundException("Dish not found");
         }
 
         return new DishDTO
@@ -120,6 +127,14 @@ public class DishService: IDishService
 
     public bool CheckRatePossibility(Guid id, Guid userID)
     {
+        
+        var dish = _context.Dishes.SingleOrDefault(dish => dish.Id == id);
+        
+        if (dish == null)
+        {
+            throw new DishNotFoundException($"Dish not found");
+        }
+        
         var allUserCarts = _context.Orders.Where(order =>
             order.UserId == userID).SelectMany(order => order.DishesInCarts).ToList();
         
@@ -134,14 +149,14 @@ public class DishService: IDishService
 
         if (allUserCarts == null)
         {
-            throw new Exception("User doesn't have ordered dishes!");
+            throw new NoOrdersException("User doesn't have ordered dishes!");
         }
         
         var isOrdered = allUserCarts.Any(dishInCart => dishInCart.DishId == id);
 
         if (!isOrdered)
         {
-            return false;
+            throw new NoOrderedDishException("User didn't order this dish");
         }
 
         var RatedBefore = _context.Ratings.FirstOrDefault(rating => rating.DishId == id
@@ -174,7 +189,7 @@ public class DishService: IDishService
         }
         else
         {
-            throw new Exception("Dish not found");
+            throw new DishNotFoundException("Dish not found");
         }
         
         _context.SaveChanges();

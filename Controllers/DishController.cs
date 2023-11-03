@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using webNET_Hits_backend_aspnet_project_1.Exceptions;
 using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 using webNET_Hits_backend_aspnet_project_1.Services;
@@ -26,10 +27,26 @@ public class DishController: ControllerBase
     /// Get a list of dishes (menu)
     /// </summary>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status404NotFound)]
     public ActionResult<DishPagedListDTO> GetListOfDishes([FromQuery] List<Category> categories, bool vegetarian = false,
         DishSorting? sorting = null, int page = 1)
     {
-        return _dishService.GetListOfDishes(categories, vegetarian, sorting, page);
+        try
+        {
+            return _dishService.GetListOfDishes(categories, vegetarian, sorting, page);
+        }
+        catch (WrongPageNumException)
+        {
+            return NotFound(new Response { status = "404", message = "Wrong page number" });
+
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new Response { message = e.Message });
+        }
+        
     }
 
 
@@ -38,12 +55,17 @@ public class DishController: ControllerBase
     /// </summary>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status404NotFound)]
     [HttpGet("{id}")]
     public ActionResult<DishDTO> GetDish(Guid id)
     {
         try
         {
             return _dishService.GetDish(id);
+        }
+        catch (DishNotFoundException)
+        {
+            return NotFound(new Response { status = "404", message = "Dish not found"});
         }
         catch (Exception e)
         {
@@ -57,16 +79,30 @@ public class DishController: ControllerBase
     /// </summary>
     [Authorize]
     [HttpGet("{id}/rating/check")]
-    public bool CheckRatePossibility(Guid id)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status404NotFound)]
+    public ActionResult<bool> CheckRatePossibility(Guid id)
     {
-        var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        try
+        {
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
-        var tokenhandler = new JwtSecurityTokenHandler();
-        var normalToken = tokenhandler.ReadToken(token) as JwtSecurityToken;
-        var userID = new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
+            var tokenhandler = new JwtSecurityTokenHandler();
+            var normalToken = tokenhandler.ReadToken(token) as JwtSecurityToken;
+            var userID = new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
 
 
-        return _dishService.CheckRatePossibility(id, userID);
+            return Ok(_dishService.CheckRatePossibility(id, userID));
+        }
+        catch (DishNotFoundException e)
+        {
+            return NotFound(new Response { status = "404", message = e.Message });
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new Response { status = "400", message = e.Message });
+        }
+        
     }
     
     
@@ -75,6 +111,7 @@ public class DishController: ControllerBase
     /// </summary>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status404NotFound)]
     [Authorize]
     [HttpPost("{id}/rating")]
     public IActionResult RateDish(Guid id, int ratingScore)
@@ -86,17 +123,22 @@ public class DishController: ControllerBase
             var tokenhandler = new JwtSecurityTokenHandler();
             var normalToken = tokenhandler.ReadToken(token) as JwtSecurityToken;
             var userID = new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
-        
+
             bool israted = _dishService.RateDish(id, ratingScore, userID);
 
-            if (israted)
-            {
-                return Ok();
-            }
-            else
-            {
-                return BadRequest();
-            }
+            return Ok();
+        }
+        catch (NoOrdersException e)
+        {
+            return NotFound(new Response { status = "404", message = e.Message });
+        }
+        catch (DishNotFoundException e)
+        {
+            return NotFound(new Response { status = "404", message = e.Message });
+        }
+        catch (NoOrderedDishException e)
+        {
+            return NotFound(new Response { status = "404", message = e.Message });
         }
         catch (Exception e)
         {
