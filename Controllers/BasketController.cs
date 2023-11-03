@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using webNET_Hits_backend_aspnet_project_1.Exceptions;
 using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 using webNET_Hits_backend_aspnet_project_1.Services;
@@ -41,6 +42,7 @@ public class BasketController: ControllerBase
     /// </summary>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status404NotFound)]
     [Authorize]
     [HttpPost("dish/{dishId}")]
     public async Task<IActionResult> AddDish(Guid dishId)
@@ -57,6 +59,10 @@ public class BasketController: ControllerBase
 
             return Ok();
         }
+        catch (DishNotFoundException e)
+        {
+            return NotFound(new Response { status = "404", message = e.Message });
+        }
         catch (Exception e)
         {
             return BadRequest(new Response { status = "400", message = e.Message });
@@ -70,6 +76,7 @@ public class BasketController: ControllerBase
     /// </summary>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Response), StatusCodes.Status404NotFound)]
     [Authorize]
     [HttpDelete("dish/{dishId}")]
     public async Task<IActionResult> RemoveDish(Guid dishId, bool increase = false)
@@ -85,6 +92,10 @@ public class BasketController: ControllerBase
             await _basketService.RemoveDish(dishId, userID, increase);
 
             return Ok();
+        }
+        catch (DishNotFoundException e)
+        {
+            return NotFound(new Response { status = "404", message = e.Message });
         }
         catch (Exception e)
         {

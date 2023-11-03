@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using webNET_Hits_backend_aspnet_project_1.Exceptions;
 using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 
@@ -58,7 +59,7 @@ public class BasketService : IBasketService
         {
             if (await _context.Dishes.FindAsync(id) == null)
             {
-                throw new Exception("Dish not found");
+                throw new DishNotFoundException("Dish not found");
             }
             await _context.DishesInCart.AddAsync(
             
@@ -78,7 +79,7 @@ public class BasketService : IBasketService
     {
         if (await _context.Dishes.FindAsync(dishId) == null)
         {
-            throw new Exception("Dish not found");
+            throw new DishNotFoundException("Dish not found");
         }
         var dishInCart = await _context.DishesInCart.FirstOrDefaultAsync(dishView =>
             dishView.DishId == dishId && dishView.UserId == userID && dishView.OrderId == null);
