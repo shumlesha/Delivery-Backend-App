@@ -26,7 +26,7 @@ public class UserRegisterModel
     [Required]
     public Gender gender { get; set; }
     
-    [Phone]
+    [RegularExpression(@"\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}", ErrorMessage="Wrong phone number!")]
     public string phoneNumber { get; set; }
     
 }
