@@ -175,9 +175,9 @@ public class DishService: IDishService
                 UserId = userID
             };
             _context.Ratings.Add(settedRating);
-            _context.SaveChanges();
+            
         }
-        
+        _context.SaveChanges();
          
         var dish = _context.Dishes.FirstOrDefault(
             dish => dish.Id == id);
