@@ -140,7 +140,7 @@ public class AddressService : IAddressService
                 select obj).FirstOrDefaultAsync();
                                  
             var houseModel = await (from house in _garContext.AsHouses
-                where house.Objectid == id && house.Isactive == 1
+                where house.Objectid == id 
                 select house).FirstOrDefaultAsync();
         
             if (objectModel != null)
