@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using webNET_Hits_backend_aspnet_project_1.Models;
 using webNET_Hits_backend_aspnet_project_1.Models.DTO;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using webNET_Hits_backend_aspnet_project_1.Exceptions;
 
 namespace webNET_Hits_backend_aspnet_project_1.Services;
 
 public interface IDishService
 {
-    DishPagedListDTO GetListOfDishes(List<Category> categories, bool vegetarian, DishSorting? sorting, int page);
+    Task<DishPagedListDTO> GetListOfDishes(List<Category> categories, bool vegetarian, DishSorting? sorting, int page);
 
-    DishDTO GetDish(Guid id);
-    bool CheckRatePossibility(Guid id, Guid userID);
+    Task<DishDTO> GetDish(Guid id);
+    Task<bool> CheckRatePossibility(Guid id, Guid userID);
     
-    bool RateDish(Guid id, int ratingScore, Guid userID);
+    Task<bool> RateDish(Guid id, int ratingScore, Guid userID);
 
 }
 
@@ -27,7 +28,7 @@ public class DishService: IDishService
         _context = context;
     }
 
-    public DishPagedListDTO GetListOfDishes(List<Category> categories, bool vegetarian, DishSorting? sorting, int page)
+    public async Task<DishPagedListDTO> GetListOfDishes(List<Category> categories, bool vegetarian, DishSorting? sorting, int page)
     {
         if (page < 1)
         {
@@ -71,7 +72,7 @@ public class DishService: IDishService
         }
         
         int pageSize = 6;
-        var dishes = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+        var dishes = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
         var dishToDTO = dishes.Select(dish =>
             new DishDTO
@@ -102,9 +103,9 @@ public class DishService: IDishService
     }
 
 
-    public DishDTO GetDish(Guid id)
+    public async Task<DishDTO> GetDish(Guid id)
     {
-        var dish = _context.Dishes.FirstOrDefault(dish =>
+        var dish = await _context.Dishes.FirstOrDefaultAsync(dish =>
             dish.Id == id);
 
         if (dish == null)
@@ -125,7 +126,7 @@ public class DishService: IDishService
         };
     }
 
-    public bool CheckRatePossibility(Guid id, Guid userID)
+    public async Task<bool> CheckRatePossibility(Guid id, Guid userID)
     {
         
         var dish = _context.Dishes.SingleOrDefault(dish => dish.Id == id);
@@ -135,14 +136,14 @@ public class DishService: IDishService
             throw new DishNotFoundException($"Dish not found");
         }
         
-        var allUserCarts = _context.Orders.Where(order =>
-            order.UserId == userID).SelectMany(order => order.DishesInCarts).ToList();
+        var allUserCarts = await _context.Orders.Where(order =>
+            order.UserId == userID).SelectMany(order => order.DishesInCarts).ToListAsync();
         
         return allUserCarts.Any(dishInCart => dishInCart.DishId == id);
         
     }
     
-    public bool RateDish(Guid id, int ratingScore, Guid userID)
+    public async Task<bool> RateDish(Guid id, int ratingScore, Guid userID)
     {
         var allUserCarts = _context.Orders.Where(order =>
             order.UserId == userID).SelectMany(order => order.DishesInCarts).ToList();
@@ -177,7 +178,7 @@ public class DishService: IDishService
             _context.Ratings.Add(settedRating);
             
         }
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
          
         var dish = _context.Dishes.FirstOrDefault(
             dish => dish.Id == id);
@@ -192,7 +193,7 @@ public class DishService: IDishService
             throw new DishNotFoundException("Dish not found");
         }
         
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         return true;
     }

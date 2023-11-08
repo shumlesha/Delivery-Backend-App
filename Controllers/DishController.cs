@@ -30,12 +30,12 @@ public class DishController: ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status404NotFound)]
-    public ActionResult<DishPagedListDTO> GetListOfDishes([FromQuery] List<Category> categories, bool vegetarian = false,
+    public async Task<ActionResult<DishPagedListDTO>> GetListOfDishes([FromQuery] List<Category> categories, bool vegetarian = false,
         DishSorting? sorting = null, int page = 1)
     {
         try
         {
-            return _dishService.GetListOfDishes(categories, vegetarian, sorting, page);
+            return await _dishService.GetListOfDishes(categories, vegetarian, sorting, page);
         }
         catch (WrongPageNumException)
         {
@@ -57,11 +57,11 @@ public class DishController: ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status404NotFound)]
     [HttpGet("{id}")]
-    public ActionResult<DishDTO> GetDish(Guid id)
+    public async Task<ActionResult<DishDTO>> GetDish(Guid id)
     {
         try
         {
-            return _dishService.GetDish(id);
+            return await _dishService.GetDish(id);
         }
         catch (DishNotFoundException)
         {
@@ -81,7 +81,7 @@ public class DishController: ControllerBase
     [HttpGet("{id}/rating/check")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Response), StatusCodes.Status404NotFound)]
-    public ActionResult<bool> CheckRatePossibility(Guid id)
+    public async Task<ActionResult<bool>> CheckRatePossibility(Guid id)
     {
         try
         {
@@ -92,7 +92,7 @@ public class DishController: ControllerBase
             var userID = new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
 
 
-            return Ok(_dishService.CheckRatePossibility(id, userID));
+            return Ok(await _dishService.CheckRatePossibility(id, userID));
         }
         catch (DishNotFoundException e)
         {
@@ -114,7 +114,7 @@ public class DishController: ControllerBase
     [ProducesResponseType(typeof(Response), StatusCodes.Status404NotFound)]
     [Authorize]
     [HttpPost("{id}/rating")]
-    public IActionResult RateDish(Guid id, int ratingScore)
+    public async Task<IActionResult> RateDish(Guid id, int ratingScore)
     {
         try
         {
@@ -124,7 +124,7 @@ public class DishController: ControllerBase
             var normalToken = tokenhandler.ReadToken(token) as JwtSecurityToken;
             var userID = new Guid(normalToken.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
 
-            bool israted = _dishService.RateDish(id, ratingScore, userID);
+            bool israted = await _dishService.RateDish(id, ratingScore, userID);
 
             return Ok();
         }
