@@ -78,7 +78,7 @@ public class OrderService : IOrderService
                                                                              dishView.OrderId == null)
             .Include(dishInCart => dishInCart.Dish).ToListAsync();
 
-        if (userWantedDishes == null)
+        if (userWantedDishes == null || userWantedDishes.Count == 0)
         {
             throw new Exception("No dishes in cart!");
         }

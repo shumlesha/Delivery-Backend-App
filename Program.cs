@@ -38,7 +38,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     );
 
 
-
+builder.Services.Configure<OrderParams>(builder.Configuration.GetSection("OrderParams"));
 
 
 builder.Services.AddControllers().AddJsonOptions(options =>
