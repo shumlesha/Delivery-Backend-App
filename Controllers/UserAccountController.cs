@@ -48,11 +48,15 @@ public class UserAccountController: ControllerBase
         }
         catch (UserAlreadyExistsException)
         {
-            return Conflict(new Response { status = "409" , message = "User already exists"});
+            return Conflict(new Response { status = "409", message = "User already exists" });
         }
         catch (DbUpdateException)
         {
             return BadRequest(new Response { status = "400", message = "User registration failed" });
+        }
+        catch (WrongBitrhDateException e)
+        {
+            return BadRequest(new Response { status = "400", message = e.Message});
         }
         catch (Exception e)
         {

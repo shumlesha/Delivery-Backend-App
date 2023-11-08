@@ -53,6 +53,11 @@ public class UserAccountService: IUserAccountService
         {
             throw new ArgumentException("Wrong gender");
         }
+
+        if (userRegisterModel.birthDate >= DateTime.UtcNow)
+        {
+            throw new WrongBitrhDateException("You can't be too much young!");
+        }
         
         var user = new User
         {

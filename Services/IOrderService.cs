@@ -83,6 +83,7 @@ public class OrderService : IOrderService
             throw new Exception("No dishes in cart!");
         }
         
+        
         var neworderid = Guid.NewGuid();
         _context.Orders.Add(
             new Order
@@ -114,6 +115,11 @@ public class OrderService : IOrderService
         if (order == null)
         {
             throw new Exception("No order with such id!");
+        }
+
+        if (order.Status != Status.InProcess)
+        {
+            throw new Exception("This order is already delivered!");
         }
         
         order.Status = Status.Delivered;
