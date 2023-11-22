@@ -31,32 +31,32 @@
 ## API
 ### Доступны следующие эндпоинты:
 
-*. Address Endpoints:
+* Address Endpoints:
 - [GET] /api/address/search -  получить List, состоящий из адресных объектов
 - [GET] /api/address/getaddress/chain - получить полную цепочку адресов для данного id
  
 
-*. Basket Endpoints:
+* Basket Endpoints:
 - [GET] /api/basket - получить пользовательскую корзину
 - [POST] /api/basket/dish/{dishId} - добавить блюдо в корзину
 - [DELETE] /api/basket/dish/{dishId} - уменьшить число блюд в корзине
  
 
-*. Dish Endpoints:
+* Dish Endpoints:
 - [GET] /api/dish - получить меню (список блюд) по заданным критериям отбора/сортировки
 - [GET] /api/dish/{id} - получить информацию об определенном блюде (по id)
 - [GET] /api/dish/{id}/rating/check - проверить возможность пользователя выставлять рейтинг на данное блюдо
 - [POST] /api/dish/{id}/rating - выставить рейтинг на блюдо
  
 
-*. Order Endpoints:
+* Order Endpoints:
 - [GET] /api/order/{id} - получить информацию о конкретном заказе (по id)
 - [GET] /api/order - получить список заказов пользователя
 - [POST] /api/order - добавить блюда из коризны в новый заказ
 - [POST] /api/order/{id}/status - подтвердить доставку заказа
  
 
-*. User (UserAccount) Endpoints:
+* User (UserAccount) Endpoints:
 - [POST] /api/account/register - зарегестрироваться (с получением токена)
 - [POST] /api/account/login - авторизоваться (с получением токена)
 - [POST] /api/account/logout - выйти из системы
