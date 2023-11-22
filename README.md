@@ -31,34 +31,34 @@
 ## API
 ### Доступны следующие эндпоинты:
 
-1. Address Endpoints:
-[GET] /api/address/search -  получить List, состоящий из адресных объектов
-[GET] /api/address/getaddress/chain - получить полную цепочку адресов для данного id
+*. Address Endpoints:
+- [GET] /api/address/search -  получить List, состоящий из адресных объектов
+- [GET] /api/address/getaddress/chain - получить полную цепочку адресов для данного id
  
 
-2. Basket Endpoints:
-[GET] /api/basket - получить пользовательскую корзину
-[POST] /api/basket/dish/{dishId} - добавить блюдо в корзину
-[DELETE] /api/basket/dish/{dishId} - уменьшить число блюд в корзине
+*. Basket Endpoints:
+- [GET] /api/basket - получить пользовательскую корзину
+- [POST] /api/basket/dish/{dishId} - добавить блюдо в корзину
+- [DELETE] /api/basket/dish/{dishId} - уменьшить число блюд в корзине
  
 
-3. Dish Endpoints:
-[GET] /api/dish - получить меню (список блюд) по заданным критериям отбора/сортировки
-[GET] /api/dish/{id} - получить информацию об определенном блюде (по id)
-[GET] /api/dish/{id}/rating/check - проверить возможность пользователя выставлять рейтинг на данное блюдо
-[POST] /api/dish/{id}/rating - выставить рейтинг на блюдо
+*. Dish Endpoints:
+- [GET] /api/dish - получить меню (список блюд) по заданным критериям отбора/сортировки
+- [GET] /api/dish/{id} - получить информацию об определенном блюде (по id)
+- [GET] /api/dish/{id}/rating/check - проверить возможность пользователя выставлять рейтинг на данное блюдо
+- [POST] /api/dish/{id}/rating - выставить рейтинг на блюдо
  
 
-4. Order Endpoints:
-[GET] /api/order/{id} - получить информацию о конкретном заказе (по id)
-[GET] /api/order - получить список заказов пользователя
-[POST] /api/order - добавить блюда из коризны в новый заказ
-[POST] /api/order/{id}/status - подтвердить доставку заказа
+*. Order Endpoints:
+- [GET] /api/order/{id} - получить информацию о конкретном заказе (по id)
+- [GET] /api/order - получить список заказов пользователя
+- [POST] /api/order - добавить блюда из коризны в новый заказ
+- [POST] /api/order/{id}/status - подтвердить доставку заказа
  
 
-5. User (UserAccount) Endpoints:
-[POST] /api/account/register - зарегестрироваться (с получением токена)
-[POST] /api/account/login - авторизоваться (с получением токена)
-[POST] /api/account/logout - выйти из системы
-[GET] /api/account/profile - получить информацию о пользовательском профиле
-[PUT] /api/account/profile - изменить параметры пользователя
+*. User (UserAccount) Endpoints:
+- [POST] /api/account/register - зарегестрироваться (с получением токена)
+- [POST] /api/account/login - авторизоваться (с получением токена)
+- [POST] /api/account/logout - выйти из системы
+- [GET] /api/account/profile - получить информацию о пользовательском профиле
+- [PUT] /api/account/profile - изменить параметры пользователя
